@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uichallenge/shopping_cart/shoppong_cart_list.dart';
 
 import 'animated_todo_list/animated_todo_list.dart';
 
@@ -40,6 +41,15 @@ class DemoList extends StatelessWidget {
                 title: const Text('Animated TODO list'),
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AnimatedTodoList()));
+                },
+                trailing: const Icon(Icons.arrow_forward),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                title: const Text('Shopping cart'),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ShoppingCartList()));
                 },
                 trailing: const Icon(Icons.arrow_forward),
               ),
