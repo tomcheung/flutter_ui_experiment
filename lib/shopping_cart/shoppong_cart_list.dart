@@ -1,45 +1,164 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import 'product.dart';
+import 'shopping_bottom_cart.dart';
 
-class ShoppingCartList extends StatefulWidget {
+class ShoppingCartList extends StatelessWidget {
   const ShoppingCartList({super.key});
 
   @override
-  State<ShoppingCartList> createState() => _ShoppingCartListState();
+  Widget build(BuildContext context) {
+    return Theme(
+        data: ThemeData.from(
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: const Color(0xfffbba3f),
+              primary: const Color(0xfffbba3f),
+            ),
+            useMaterial3: true),
+        child: const ShoppingCartListContent());
+  }
 }
 
-class _ShoppingCartListState extends State<ShoppingCartList> {
+class ShoppingCartListContent extends StatefulWidget {
+  const ShoppingCartListContent({super.key});
+
+  @override
+  State<ShoppingCartListContent> createState() =>
+      _ShoppingCartListContentState();
+}
+
+class _ShoppingCartListContentState extends State<ShoppingCartListContent>
+    with SingleTickerProviderStateMixin {
+  static const double bottomCartHeight = 450;
+  late AnimationController _verticalOffsetAnimation;
+
+  double _beginOffset = 0;
+
+  @override
+  void initState() {
+    _verticalOffsetAnimation = AnimationController(
+      vsync: this,
+      lowerBound: -bottomCartHeight,
+      upperBound: 0,
+      value: 0,
+      duration: const Duration(milliseconds: 250),
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _verticalOffsetAnimation.dispose();
+    super.dispose();
+  }
+
+  Widget _buildBottomHeader(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedBuilder(
+          animation: _verticalOffsetAnimation,
+          child: const BottomShortCart(),
+          builder: (context, child) {
+            return Opacity(
+              opacity: 1 + _verticalOffsetAnimation.value / bottomCartHeight,
+              child: child,
+            );
+          }),
+      onVerticalDragStart: (e) {
+        _beginOffset = e.globalPosition.dy - _verticalOffsetAnimation.value;
+      },
+      onVerticalDragUpdate: (e) {
+        final double offset = min(0, e.globalPosition.dy - _beginOffset);
+        _verticalOffsetAnimation.value = offset;
+      },
+      onVerticalDragEnd: (e) {
+        const curve = Curves.easeInOut;
+        if (e.velocity.pixelsPerSecond.dy < -10) {
+          _verticalOffsetAnimation.animateTo(-bottomCartHeight, curve: curve);
+        } else if (e.velocity.pixelsPerSecond.dy > 10) {
+          _verticalOffsetAnimation.animateTo(0, curve: curve);
+        } else if (_verticalOffsetAnimation.value < -bottomCartHeight / 2) {
+          _verticalOffsetAnimation.animateTo(-bottomCartHeight, curve: curve);
+        } else {
+          _verticalOffsetAnimation.animateTo(0, curve: curve);
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xfff7f4ef),
-        title: Text('Pasta & Noodles'),
-      ),
-      backgroundColor: Colors.black,
-      body: Column(
-        children: [
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Color(0xfff7f4ef),
-                borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(42),
-                    bottomRight: Radius.circular(42)),
-              ),
-              child: GridView.count(
-                crossAxisCount: 2,
-                childAspectRatio: 0.6,
-                children: Product.sample
-                    .map((e) => ShoppingCartItem(product: e))
-                    .toList(growable: false),
+    print(context);
+
+    return Stack(
+      children: [
+        Container(color: Colors.black),
+        AnimatedBuilder(
+          animation: _verticalOffsetAnimation,
+          builder: (context, child) => Transform.translate(
+            offset: Offset(0, _verticalOffsetAnimation.value),
+            child: child,
+          ),
+          child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: const Color(0xfff7f4ef),
+              title: const Text('Pasta & Noodles'),
+            ),
+            backgroundColor: Colors.transparent,
+            body: Column(
+              children: [
+                Expanded(
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Color(0xfff7f4ef),
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(42),
+                        bottomRight: Radius.circular(42),
+                      ),
+                    ),
+                    child: GridView.count(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.6,
+                      padding: const EdgeInsets.all(8),
+                      children: Product.sample
+                          .map((e) => ShoppingCartItem(product: e))
+                          .toList(growable: false),
+                    ),
+                  ),
+                ),
+                _buildBottomHeader(context)
+              ],
+            ),
+          ),
+        ),
+        LayoutBuilder(
+          builder: (_, c) => AnimatedBuilder(
+            animation: _verticalOffsetAnimation,
+            builder: (context, child) {
+              final topOffset = c.maxHeight + _verticalOffsetAnimation.value;
+              return Transform.translate(
+                offset: Offset(0, topOffset),
+                child: SizedBox(
+                  height: bottomCartHeight,
+                  child: Opacity(
+                    opacity: -_verticalOffsetAnimation.value / bottomCartHeight,
+                    child: child ?? const Placeholder(),
+                  ),
+                ),
+              );
+            },
+            child: const Material(
+              color: Colors.black,
+              child: ClipRect(
+                clipBehavior: Clip.hardEdge,
+                child: BottomShoppingCartList(),
               ),
             ),
           ),
-          BottomShortCart()
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -49,28 +168,32 @@ class BottomShortCart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return SizedBox(
       height: 80,
       child: Padding(
         padding: const EdgeInsets.all(18.0),
         child: Row(
           children: [
-            Text(
+            const Text(
               'Cart',
               style: TextStyle(color: Colors.white, fontSize: 24),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
               child: CircleAvatar(),
             ),
-            Spacer(),
+            const Spacer(),
             Container(
-              decoration:
-                  BoxDecoration(shape: BoxShape.circle, color: Colors.orange),
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle, color: theme.colorScheme.primary),
               height: 45,
               width: 45,
               alignment: Alignment.center,
-              child: Text('0', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),),
+              child: const Text(
+                '0',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
             )
           ],
         ),
@@ -86,22 +209,25 @@ class ShoppingCartItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final imageUrl = product.imageUrl;
     final style = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
       ),
-      padding: EdgeInsets.symmetric(vertical: 32, horizontal: 16),
-      margin: EdgeInsets.all(8),
+      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+      margin: const EdgeInsets.all(8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AspectRatio(
             aspectRatio: 1,
-            child: Container(color: Colors.grey),
+            child: imageUrl != null
+                ? Image.network(imageUrl)
+                : Container(color: Colors.grey),
           ),
-          Spacer(),
+          const Spacer(),
           Text(
             '\$${product.price}',
             style: style.textTheme.headlineMedium?.apply(fontWeightDelta: 2),

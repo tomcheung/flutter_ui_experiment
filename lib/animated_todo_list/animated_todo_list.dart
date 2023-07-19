@@ -9,13 +9,12 @@ class AnimatedTodoList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
+    return Theme(
+      data: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
         useMaterial3: true,
       ),
-      home: const HomeTodoList(),
+      child: const HomeTodoList(),
     );
   }
 }
@@ -72,6 +71,7 @@ class _HomeTodoListState extends State<HomeTodoList> {
       animation: _backgroundColor,
       builder: (context, child) => Scaffold(
         appBar: AppBar(
+          leading: BackButton(onPressed: () => Navigator.of(context).pop(),),
           centerTitle: true,
           titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
           iconTheme: const IconThemeData(color: Colors.white),
