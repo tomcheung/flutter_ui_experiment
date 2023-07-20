@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:uichallenge/shopping_cart/shopping_cart_detail.dart';
 
 import 'product.dart';
 import 'shopping_bottom_cart.dart';
@@ -10,19 +11,25 @@ class ShoppingCartList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-        data: ThemeData.from(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xfffbba3f),
-              primary: const Color(0xfffbba3f),
-            ),
-            useMaterial3: true),
-        child: const ShoppingCartListContent());
+    return MaterialApp(
+        theme: ThemeData.from(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xfffbba3f),
+            primary: const Color(0xfffbba3f),
+          ),
+          useMaterial3: true,
+          textTheme: const TextTheme(
+            titleLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.w500)
+          )
+        ),
+        home: ShoppingCartListContent(rootContext: context));
   }
 }
 
 class ShoppingCartListContent extends StatefulWidget {
-  const ShoppingCartListContent({super.key});
+  final BuildContext rootContext;
+
+  const ShoppingCartListContent({super.key, required this.rootContext});
 
   @override
   State<ShoppingCartListContent> createState() =>
@@ -90,11 +97,31 @@ class _ShoppingCartListContentState extends State<ShoppingCartListContent>
 
   @override
   Widget build(BuildContext context) {
-    print(context);
-
     return Stack(
       children: [
         Container(color: Colors.black),
+        LayoutBuilder(
+          builder: (_, c) => AnimatedBuilder(
+            animation: _verticalOffsetAnimation,
+            builder: (context, child) {
+              final topOffset = c.maxHeight + _verticalOffsetAnimation.value - 60;
+              return Transform.translate(
+                offset: Offset(0, topOffset),
+                child: SizedBox(
+                  height: bottomCartHeight,
+                  child: Opacity(
+                    opacity: -_verticalOffsetAnimation.value / bottomCartHeight,
+                    child: child ?? const Placeholder(),
+                  ),
+                ),
+              );
+            },
+            child: const Material(
+              color: Colors.black,
+              child: BottomShoppingCartList(),
+            ),
+          ),
+        ),
         AnimatedBuilder(
           animation: _verticalOffsetAnimation,
           builder: (context, child) => Transform.translate(
@@ -103,6 +130,9 @@ class _ShoppingCartListContentState extends State<ShoppingCartListContent>
           ),
           child: Scaffold(
             appBar: AppBar(
+              leading: BackButton(onPressed: () {
+                Navigator.of(widget.rootContext).pop();
+              },),
               backgroundColor: const Color(0xfff7f4ef),
               title: const Text('Pasta & Noodles'),
             ),
@@ -133,31 +163,6 @@ class _ShoppingCartListContentState extends State<ShoppingCartListContent>
             ),
           ),
         ),
-        LayoutBuilder(
-          builder: (_, c) => AnimatedBuilder(
-            animation: _verticalOffsetAnimation,
-            builder: (context, child) {
-              final topOffset = c.maxHeight + _verticalOffsetAnimation.value;
-              return Transform.translate(
-                offset: Offset(0, topOffset),
-                child: SizedBox(
-                  height: bottomCartHeight,
-                  child: Opacity(
-                    opacity: -_verticalOffsetAnimation.value / bottomCartHeight,
-                    child: child ?? const Placeholder(),
-                  ),
-                ),
-              );
-            },
-            child: const Material(
-              color: Colors.black,
-              child: ClipRect(
-                clipBehavior: Clip.hardEdge,
-                child: BottomShoppingCartList(),
-              ),
-            ),
-          ),
-        ),
       ],
     );
   }
@@ -179,9 +184,9 @@ class BottomShortCart extends StatelessWidget {
               'Cart',
               style: TextStyle(color: Colors.white, fontSize: 24),
             ),
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: CircleAvatar(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Hero(tag: 'cart-image', child: CircleAvatar(foregroundImage: NetworkImage(Product.sample.first.imageUrl ?? ''),)),
             ),
             const Spacer(),
             Container(
@@ -211,30 +216,38 @@ class ShoppingCartItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final imageUrl = product.imageUrl;
     final style = Theme.of(context);
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
-      margin: const EdgeInsets.all(8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AspectRatio(
-            aspectRatio: 1,
-            child: imageUrl != null
-                ? Image.network(imageUrl)
-                : Container(color: Colors.grey),
-          ),
-          const Spacer(),
-          Text(
-            '\$${product.price}',
-            style: style.textTheme.headlineMedium?.apply(fontWeightDelta: 2),
-          ),
-          Text(product.name),
-          Text(product.description),
-        ],
+    return InkResponse(
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (ctx) => ShoppingCardDetail(
+                  product: product,
+                )));
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+        margin: const EdgeInsets.all(8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AspectRatio(
+              aspectRatio: 1,
+              child: imageUrl != null
+                  ? Hero(tag: 'product-image', child: Image.network(imageUrl))
+                  : Container(color: Colors.grey),
+            ),
+            const Spacer(),
+            Text(
+              '\$${product.price}',
+              style: style.textTheme.headlineMedium?.apply(fontWeightDelta: 2),
+            ),
+            Text(product.name),
+            Text(product.description),
+          ],
+        ),
       ),
     );
   }
