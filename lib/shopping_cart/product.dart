@@ -1,33 +1,35 @@
-class Product {
-  final String name;
-  final num price;
-  final String description;
-  final String? imageUrl;
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  const Product({
-    required this.name,
-    required this.price,
-    required this.description,
-    this.imageUrl,
-  });
+part 'product.freezed.dart';
+
+@freezed
+class Product with _$Product {
+  const factory Product({
+    required String name,
+    required num price,
+    required String description,
+    String? imageAssetName,
+  }) = _Product;
 
   static const List<Product> sample = [
     Product(
-        name: 'Product A',
+        name: 'Seggiano Organic Tagflatelle',
         price: 7.99,
         description: 'description',
-        imageUrl:
-            'https://d262h05t49kych.cloudfront.net/i2brehz4c63yd9tv4pg06zwnvl3e'),
-    Product(name: 'Product B', price: 7.99, description: 'description'),
+        imageAssetName: 'images/shopping_cart/pasta.jpg'),
+    Product(
+      name: 'Rummo Fusilli No 48 Pasta',
+      price: 14.99,
+      description: 'description',
+      imageAssetName: 'images/shopping_cart/rummo_fusilli_no_48.jpg',
+    ),
   ];
 }
 
-class ShoppingCartItem {
-  final Product product;
-  final int quantity;
-
-  ShoppingCartItem({
-    required this.product,
-    required this.quantity,
-  });
+@freezed
+class ShoppingCartItem with _$ShoppingCartItem {
+  const factory ShoppingCartItem({
+    required Product product,
+    required int quantity,
+  }) = _ShoppingCartItem;
 }

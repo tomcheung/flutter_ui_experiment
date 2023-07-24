@@ -1,9 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uichallenge/shopping_cart/shopping_cart_detail.dart';
 
 import 'product.dart';
+import 'product_cart_provider.dart';
 import 'shopping_bottom_cart.dart';
 
 class ShoppingCartList extends StatelessWidget {
@@ -11,18 +13,19 @@ class ShoppingCartList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        theme: ThemeData.from(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xfffbba3f),
-            primary: const Color(0xfffbba3f),
-          ),
-          useMaterial3: true,
-          textTheme: const TextTheme(
-            titleLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.w500)
-          )
-        ),
-        home: ShoppingCartListContent(rootContext: context));
+    return ProviderScope(
+      child: MaterialApp(
+          theme: ThemeData.from(
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: const Color(0xfffbba3f),
+                primary: const Color(0xfffbba3f),
+              ),
+              useMaterial3: true,
+              textTheme: const TextTheme(
+                  titleLarge:
+                      TextStyle(fontSize: 32, fontWeight: FontWeight.w500))),
+          home: ShoppingCartListContent(rootContext: context)),
+    );
   }
 }
 
@@ -73,6 +76,12 @@ class _ShoppingCartListContentState extends State<ShoppingCartListContent>
               child: child,
             );
           }),
+      onTap: () {
+        final double targetOffset =
+            _verticalOffsetAnimation.value == 0 ? -bottomCartHeight : 0;
+        _verticalOffsetAnimation.animateTo(targetOffset,
+            curve: Curves.easeInOut);
+      },
       onVerticalDragStart: (e) {
         _beginOffset = e.globalPosition.dy - _verticalOffsetAnimation.value;
       },
@@ -104,7 +113,8 @@ class _ShoppingCartListContentState extends State<ShoppingCartListContent>
           builder: (_, c) => AnimatedBuilder(
             animation: _verticalOffsetAnimation,
             builder: (context, child) {
-              final topOffset = c.maxHeight + _verticalOffsetAnimation.value - 60;
+              final topOffset =
+                  c.maxHeight + _verticalOffsetAnimation.value - 60;
               return Transform.translate(
                 offset: Offset(0, topOffset),
                 child: SizedBox(
@@ -130,9 +140,11 @@ class _ShoppingCartListContentState extends State<ShoppingCartListContent>
           ),
           child: Scaffold(
             appBar: AppBar(
-              leading: BackButton(onPressed: () {
-                Navigator.of(widget.rootContext).pop();
-              },),
+              leading: BackButton(
+                onPressed: () {
+                  Navigator.of(widget.rootContext).pop();
+                },
+              ),
               backgroundColor: const Color(0xfff7f4ef),
               title: const Text('Pasta & Noodles'),
             ),
@@ -153,7 +165,7 @@ class _ShoppingCartListContentState extends State<ShoppingCartListContent>
                       childAspectRatio: 0.6,
                       padding: const EdgeInsets.all(8),
                       children: Product.sample
-                          .map((e) => ShoppingCartItem(product: e))
+                          .map((e) => ShoppingCartItemCard(product: e))
                           .toList(growable: false),
                     ),
                   ),
@@ -168,11 +180,35 @@ class _ShoppingCartListContentState extends State<ShoppingCartListContent>
   }
 }
 
-class BottomShortCart extends StatelessWidget {
+class BottomShortCart extends ConsumerWidget {
   const BottomShortCart({super.key});
 
+  Widget _buildCartList(BuildContext context, WidgetRef ref) {
+    final shoppingItems = ref.watch(shoppingCartProvider);
+
+    return Expanded(
+      child: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        scrollDirection: Axis.horizontal,
+        children: shoppingItems
+            .map((s) => Hero(
+                  tag: 'cart-image-${s.product.name}',
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    child: CircleAvatar(
+                      foregroundImage:
+                          AssetImage(s.product.imageAssetName ?? ''),
+                    ),
+                  ),
+                ))
+            .toList(),
+      ),
+    );
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final itemCount = ref.watch(shoppingCartItemCountProvider);
     final theme = Theme.of(context);
     return SizedBox(
       height: 80,
@@ -184,10 +220,7 @@ class BottomShortCart extends StatelessWidget {
               'Cart',
               style: TextStyle(color: Colors.white, fontSize: 24),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Hero(tag: 'cart-image', child: CircleAvatar(foregroundImage: NetworkImage(Product.sample.first.imageUrl ?? ''),)),
-            ),
+            _buildCartList(context, ref),
             const Spacer(),
             Container(
               decoration: BoxDecoration(
@@ -195,9 +228,10 @@ class BottomShortCart extends StatelessWidget {
               height: 45,
               width: 45,
               alignment: Alignment.center,
-              child: const Text(
-                '0',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              child: Text(
+                itemCount.toString(),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
             )
           ],
@@ -207,14 +241,14 @@ class BottomShortCart extends StatelessWidget {
   }
 }
 
-class ShoppingCartItem extends StatelessWidget {
+class ShoppingCartItemCard extends StatelessWidget {
   final Product product;
 
-  const ShoppingCartItem({required this.product, super.key});
+  const ShoppingCartItemCard({required this.product, super.key});
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = product.imageUrl;
+    final imageUrl = product.imageAssetName;
     final style = Theme.of(context);
     return InkResponse(
       onTap: () {
@@ -236,7 +270,10 @@ class ShoppingCartItem extends StatelessWidget {
             AspectRatio(
               aspectRatio: 1,
               child: imageUrl != null
-                  ? Hero(tag: 'product-image', child: Image.network(imageUrl))
+                  ? Hero(
+                      tag:
+                          '${ShoppingCardDetail.heroTagPrefix}-${product.name}',
+                      child: Image.asset(imageUrl))
                   : Container(color: Colors.grey),
             ),
             const Spacer(),

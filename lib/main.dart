@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:uichallenge/shopping_cart/shoppong_cart_list.dart';
+import 'package:uichallenge/shopping_cart/shopping_cart_list.dart';
 
 import 'animated_todo_list/animated_todo_list.dart';
 
@@ -29,8 +29,8 @@ class DemoList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: const Text('Flutter UI experiment'), centerTitle: true),
+      appBar:
+          AppBar(title: const Text('Flutter UI experiment'), centerTitle: true),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: ListView(
@@ -40,7 +40,8 @@ class DemoList extends StatelessWidget {
               child: ListTile(
                 title: const Text('Animated TODO list'),
                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AnimatedTodoList()));
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const AnimatedTodoList()));
                 },
                 trailing: const Icon(Icons.arrow_forward),
               ),
@@ -49,7 +50,8 @@ class DemoList extends StatelessWidget {
               child: ListTile(
                 title: const Text('Shopping cart'),
                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ShoppingCartList()));
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const ShoppingCartList()));
                 },
                 trailing: const Icon(Icons.arrow_forward),
               ),

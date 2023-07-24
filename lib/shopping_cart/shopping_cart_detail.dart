@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'product.dart';
+import 'product_cart_provider.dart';
 
 class Stepper extends StatelessWidget {
   final Function(int) onValueChange;
@@ -40,23 +42,47 @@ class Stepper extends StatelessWidget {
   }
 }
 
-class ShoppingCardDetail extends StatefulWidget {
+class ShoppingCardDetail extends ConsumerStatefulWidget {
+  static const heroTagPrefix = 'product-image';
   final Product product;
 
   const ShoppingCardDetail({required this.product, super.key});
 
   @override
-  State<ShoppingCardDetail> createState() => _ShoppingCardDetailState();
+  ConsumerState<ShoppingCardDetail> createState() => _ShoppingCardDetailState();
 }
 
-class _ShoppingCardDetailState extends State<ShoppingCardDetail> {
-  var heroTag = 'product-image';
+class _ShoppingCardDetailState extends ConsumerState<ShoppingCardDetail> {
+  var _heroTag = '';
   int _qty = 1;
+
+  @override
+  void initState() {
+    _heroTag = '${ShoppingCardDetail.heroTagPrefix}-${widget.product.name}';
+    super.initState();
+  }
+
+  void _addProduct() {
+    final newItem = ShoppingCartItem(product: widget.product, quantity: _qty);
+    final shoppingCardState = ref.read(shoppingCartProvider.notifier);
+
+    var newShoppingCartItems = List.of(shoppingCardState.state);
+    final existProductIndex = shoppingCardState.state
+        .indexWhere((element) => element.product == widget.product);
+    if (existProductIndex != -1) {
+      final newQty = newShoppingCartItems[existProductIndex].quantity + _qty;
+      newShoppingCartItems[existProductIndex] =
+          newShoppingCartItems[existProductIndex].copyWith(quantity: newQty);
+    } else {
+      newShoppingCartItems.add(newItem);
+    }
+    shoppingCardState.state = newShoppingCartItems;
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final imageUrl = widget.product.imageUrl;
+    final imageUrl = widget.product.imageAssetName;
     return Scaffold(
       appBar: AppBar(),
       body: Column(
@@ -70,7 +96,7 @@ class _ShoppingCardDetailState extends State<ShoppingCardDetail> {
                   child: AspectRatio(
                     aspectRatio: 1,
                     child: imageUrl != null
-                        ? Hero(tag: heroTag, child: Image.network(imageUrl))
+                        ? Hero(tag: _heroTag, child: Image.asset(imageUrl))
                         : const Placeholder(),
                   ),
                 ),
@@ -117,9 +143,13 @@ class _ShoppingCardDetailState extends State<ShoppingCardDetail> {
                   flex: 1,
                   fit: FlexFit.tight,
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.black,
+                        backgroundColor: theme.colorScheme.primary),
                     onPressed: () {
+                      _addProduct();
                       setState(() {
-                        heroTag = 'cart-image';
+                        _heroTag = 'cart-image-${widget.product.name}';
                       });
                       Navigator.of(context).pop();
                     },
