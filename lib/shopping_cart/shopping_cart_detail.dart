@@ -103,7 +103,7 @@ class _ShoppingCardDetailState extends ConsumerState<ShoppingCardDetail> {
                 const SizedBox(height: 16),
                 Text(
                   widget.product.name,
-                  style: theme.textTheme.titleLarge,
+                  style: theme.textTheme.displayLarge,
                 ),
                 Text(widget.product.description),
                 Padding(
@@ -121,7 +121,7 @@ class _ShoppingCardDetailState extends ConsumerState<ShoppingCardDetail> {
                       ),
                       const Spacer(),
                       Text('\$${widget.product.price}',
-                          style: theme.textTheme.titleLarge),
+                          style: theme.textTheme.displayLarge),
                     ],
                   ),
                 ),

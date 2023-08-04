@@ -22,7 +22,7 @@ class ShoppingCartList extends StatelessWidget {
               ),
               useMaterial3: true,
               textTheme: const TextTheme(
-                  titleLarge:
+                  displayLarge:
                       TextStyle(fontSize: 32, fontWeight: FontWeight.w500))),
           home: ShoppingCartListContent(rootContext: context)),
     );
@@ -162,7 +162,7 @@ class _ShoppingCartListContentState extends State<ShoppingCartListContent>
                     ),
                     child: GridView.count(
                       crossAxisCount: 2,
-                      childAspectRatio: 0.6,
+                      childAspectRatio: 0.56,
                       padding: const EdgeInsets.all(8),
                       children: Product.sample
                           .map((e) => ShoppingCartItemCard(product: e))
