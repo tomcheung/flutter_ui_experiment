@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uichallenge/vintage_cars/vintage_cars.dart';
 import 'package:uichallenge/shopping_cart/shopping_cart_list.dart';
 
 import 'animated_todo_list/animated_todo_list.dart';
@@ -52,6 +53,16 @@ class DemoList extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => const ShoppingCartList()));
+                },
+                trailing: const Icon(Icons.arrow_forward),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                title: const Text('Vintage cars'),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const VintageCars()));
                 },
                 trailing: const Icon(Icons.arrow_forward),
               ),
