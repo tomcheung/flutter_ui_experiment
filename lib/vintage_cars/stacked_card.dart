@@ -63,6 +63,7 @@ class _StackedCardState extends State<StackedCard>
           var content = _itemMap[itemIndex];
           if (content == null || content.$1 != itemIndex) {
             content = (itemIndex, widget.itemBuilder(itemIndex));
+            _itemMap[itemIndex] = content;
           }
 
           final item = Transform(
