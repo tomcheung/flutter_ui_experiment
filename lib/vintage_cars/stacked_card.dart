@@ -51,6 +51,10 @@ class _StackedCardState extends State<StackedCard>
 
   @override
   Widget build(BuildContext context) {
+    final currentCardIndex = _cardAnimator.value.toInt();
+    _itemMap[currentCardIndex] = (currentCardIndex, widget.itemBuilder(currentCardIndex));
+
+
     return AnimatedBuilder(
       animation: _cardAnimator,
       builder: (context, child) => Stack(
