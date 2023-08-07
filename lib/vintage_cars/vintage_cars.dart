@@ -19,6 +19,7 @@ class _VintageCarsState extends State<VintageCars>
 
   final ScrollController _scrollController = ScrollController();
   int _currentYear = startYear;
+  var _showAppbar = true;
   late AnimationController _animationController;
   late Animation<double> timelineOffsetAnimation;
   late Animation<double> titleOpacityAnimation;
@@ -31,14 +32,24 @@ class _VintageCarsState extends State<VintageCars>
     _animationController = AnimationController(vsync: this, value: 0);
 
     slideUpAnimation = CurvedAnimation(
-        parent: _animationController, curve: const Interval(0, 0.4, curve: Curves.easeInSine));
+        parent: _animationController,
+        curve: const Interval(0, 0.4, curve: Curves.easeInSine));
     colorFadeAnimation = CurvedAnimation(
-        parent: _animationController, curve: const Interval(0.4, 1, curve: Curves.easeOutSine));
+        parent: _animationController,
+        curve: const Interval(0.4, 1, curve: Curves.easeOutSine));
 
     timelineOffsetAnimation =
         Tween<double>(begin: 250, end: 0).animate(slideUpAnimation);
     titleOpacityAnimation =
         Tween<double>(begin: 1, end: 0).animate(slideUpAnimation);
+
+    _animationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        setState(() {
+          _showAppbar = _animationController.value < 1;
+        });
+      }
+    });
 
     super.initState();
   }
@@ -67,31 +78,25 @@ class _VintageCarsState extends State<VintageCars>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: AnimatedBuilder(
-          animation: titleOpacityAnimation,
-          builder: (context, child) {
-            return Opacity(opacity: titleOpacityAnimation.value, child: child);
-          },
-          child: const Text(
-            'Timeline',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-          ),
-        ),
-        backgroundColor: Colors.transparent,
-        systemOverlayStyle: SystemUiOverlayStyle.dark,
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.bug_report),
-        onPressed: () {
-          _animationController.animateTo(
-            _animationController.value == 0 ? 1 : 0,
-            duration: const Duration(milliseconds: 1500),
-          );
-        },
-      ),
       extendBodyBehindAppBar: true,
+      appBar: _showAppbar
+          ? AppBar(
+              centerTitle: true,
+              title: AnimatedBuilder(
+                animation: titleOpacityAnimation,
+                builder: (context, child) {
+                  return Opacity(
+                      opacity: titleOpacityAnimation.value, child: child);
+                },
+                child: const Text(
+                  'Timeline',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                ),
+              ),
+              backgroundColor: Colors.transparent,
+              systemOverlayStyle: SystemUiOverlayStyle.dark,
+            )
+          : null,
       body: Column(
         children: [
           AnimatedBuilder(
@@ -111,6 +116,7 @@ class _VintageCarsState extends State<VintageCars>
           Expanded(
             child: BottomCarCard(
               carInfo: CarInfo.chevroletCorvetteC3,
+              animationController: _animationController,
               slideUpAnimation: slideUpAnimation,
               colorFadeAnimation: colorFadeAnimation,
             ),
@@ -122,6 +128,7 @@ class _VintageCarsState extends State<VintageCars>
 }
 
 class BottomCarCard extends StatelessWidget {
+  final AnimationController animationController;
   final Animation<double> slideUpAnimation;
   final Animation<double> colorFadeAnimation;
   final CarInfo carInfo;
@@ -129,6 +136,7 @@ class BottomCarCard extends StatelessWidget {
   const BottomCarCard({
     super.key,
     required this.carInfo,
+    required this.animationController,
     required this.slideUpAnimation,
     required this.colorFadeAnimation,
   });
@@ -197,6 +205,7 @@ class BottomCarCard extends StatelessWidget {
             child: Container(
               color: Colors.white,
               child: ListView(
+                physics: NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.zero,
                 children: [
                   TopCarInfo(
@@ -220,11 +229,26 @@ class BottomCarCard extends StatelessWidget {
                 ],
               ),
             )),
-        const Positioned(
-          top: 48,
+        Positioned(
+          top: 42,
           left: 0,
           right: 0,
-          child: Center(child: Handle(color: Colors.grey)),
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onVerticalDragUpdate: (d) {
+              if (d.delta.dy < -0.5 && animationController.value == 0) {
+                animationController.animateTo(1,
+                    duration: const Duration(milliseconds: 1500));
+              } else if (d.delta.dy > 0.5 && animationController.value == 1) {
+                animationController.animateTo(0,
+                    duration: const Duration(milliseconds: 1500));
+              }
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Center(child: Handle(color: Colors.grey)),
+            ),
+          ),
         ),
       ],
     );

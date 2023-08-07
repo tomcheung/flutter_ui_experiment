@@ -5,13 +5,16 @@ import 'package:flutter/material.dart';
 class StackedCard extends StatefulWidget {
   final Widget Function(int) itemBuilder;
   final int currentIndex;
+  final double cornerRadius;
   final Duration? animationDuration;
 
-  const StackedCard(
-      {super.key,
-      required this.itemBuilder,
-      this.currentIndex = 0,
-      this.animationDuration});
+  const StackedCard({
+    super.key,
+    required this.itemBuilder,
+    this.currentIndex = 0,
+    this.cornerRadius = 16,
+    this.animationDuration,
+  });
 
   @override
   State<StackedCard> createState() => _StackedCardState();
@@ -43,8 +46,8 @@ class _StackedCardState extends State<StackedCard>
   void didUpdateWidget(covariant StackedCard oldWidget) {
     _cardAnimator.animateTo(
       widget.currentIndex.toDouble(),
-      curve: Curves.easeOut,
-      duration: widget.animationDuration ?? const Duration(milliseconds: 250),
+      curve: Curves.easeOutSine,
+      duration: widget.animationDuration ?? const Duration(milliseconds: 550),
     );
     super.didUpdateWidget(oldWidget);
   }
@@ -52,9 +55,10 @@ class _StackedCardState extends State<StackedCard>
   @override
   Widget build(BuildContext context) {
     final currentCardIndex = _cardAnimator.value.toInt();
-    _itemMap[currentCardIndex] = (currentCardIndex, widget.itemBuilder(currentCardIndex));
+    _itemMap[currentCardIndex] =
+        (currentCardIndex, widget.itemBuilder(currentCardIndex));
 
-
+    // _cardAnimator.value = 0.1;
     return AnimatedBuilder(
       animation: _cardAnimator,
       builder: (context, child) => Stack(
@@ -64,18 +68,38 @@ class _StackedCardState extends State<StackedCard>
           final i = idx + transition;
 
           final itemIndex = _cardAnimator.value.toInt();
-          var content = _itemMap[itemIndex];
-          if (content == null || content.$1 != itemIndex) {
-            content = (itemIndex, widget.itemBuilder(itemIndex));
-            _itemMap[itemIndex] = content;
+          Widget content;
+          if (idx <= 0) {
+            final cachedItem = _itemMap[itemIndex];
+            if (cachedItem != null && cachedItem.$1 == itemIndex) {
+              content = cachedItem.$2;
+            } else {
+              content = widget.itemBuilder(itemIndex);
+              _itemMap[itemIndex] = (itemIndex, content);
+            }
+          } else {
+            content = Container(
+              decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(widget.cornerRadius)),
+            );
           }
 
-          final item = Transform(
-            alignment: Alignment.topCenter,
-            transform:
-                Matrix4.translationValues(0, i * -10, 0).scaled(pow(0.9, i)),
-            child: content.$2,
-          );
+          Widget item;
+          if (idx >= 0) {
+            item = Transform(
+              alignment: Alignment.topCenter,
+              transform:
+                  Matrix4.translationValues(0, i * -10, 0).scaled(pow(0.9, i)),
+              child: content,
+            );
+          } else {
+            item = Transform(
+              alignment: Alignment.bottomLeft,
+              transform: Matrix4.rotationZ(0.3 * i)..translate(i * 100, i * 30, 0),
+              child: content,
+            );
+          }
 
           double opacity = 1;
           if (idx < 0 || idx > 1) {
@@ -83,7 +107,7 @@ class _StackedCardState extends State<StackedCard>
           }
 
           if (idx > 0) {
-            opacity *= pow(0.9, idx).toDouble();
+            opacity *= pow(0.5, idx).toDouble();
           }
 
           return Opacity(
