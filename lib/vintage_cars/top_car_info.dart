@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:uichallenge/vintage_cars/car_info.dart';
 
 import 'components.dart';
@@ -41,11 +42,11 @@ class TopCarInfo extends StatelessWidget {
               children: [
                 Text(
                   carInfo.year.toString(),
-                  style: TextStyle(fontSize: 62, color: color),
+                  style: GoogleFonts.cardo(textStyle: TextStyle(fontSize: 62, color: color)),
                 ),
                 Text(
                   '-${carInfo.year + 1}',
-                  style: TextStyle(
+                  style: GoogleFonts.cardo(textStyle: TextStyle(
                     fontSize: 30,
                     color: Colors.black,
                     shadows: darkBackground
@@ -54,7 +55,7 @@ class TopCarInfo extends StatelessWidget {
                             strokeWidth: 1,
                             strokeColor: color.withAlpha(50))
                         : null,
-                  ),
+                  )),
                 ),
               ],
             ),
@@ -63,7 +64,7 @@ class TopCarInfo extends StatelessWidget {
               child:
                   Image.asset('images/vintage_cars/chevrolet_corvette_c3.png'),
             ),
-            Text(carInfo.name, style: TextStyle(fontSize: 45, color: color))
+            Text(carInfo.name, style: GoogleFonts.dmSerifDisplay(textStyle: TextStyle(fontSize: 45, color: color)))
           ],
         ),
       ),

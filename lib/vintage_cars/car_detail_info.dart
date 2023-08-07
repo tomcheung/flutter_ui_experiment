@@ -8,7 +8,7 @@ class CarDetailInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final titleStyle = TextStyle(fontSize: 16);
+    final titleStyle = TextStyle(fontSize: 14);
     final valueStyle = TextStyle(fontSize: 20);
     return Padding(
       padding: const EdgeInsets.only(left: 24.0),
