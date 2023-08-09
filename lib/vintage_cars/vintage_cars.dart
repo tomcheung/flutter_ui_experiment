@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:uichallenge/vintage_cars/car_info.dart';
+import 'package:uichallenge/vintage_cars/stacked_card.dart';
 import 'package:uichallenge/vintage_cars/top_car_info.dart';
 
 import 'car_detail_info.dart';
@@ -17,7 +19,7 @@ class _VintageCarsState extends State<VintageCars>
     with TickerProviderStateMixin {
   static const startYear = 1959;
 
-  final ScrollController _scrollController = ScrollController();
+  final ItemScrollController _scrollController = ItemScrollController();
   int _currentYear = startYear;
   var _showAppbar = true;
   late AnimationController _animationController;
@@ -56,14 +58,14 @@ class _VintageCarsState extends State<VintageCars>
 
   @override
   void dispose() {
-    _scrollController.dispose();
     _animationController.dispose();
     super.dispose();
   }
 
   Widget _buildTimeline(BuildContext context) {
-    return ListView.builder(
-      controller: _scrollController,
+    return ScrollablePositionedList.builder(
+      itemScrollController: _scrollController,
+      itemCount: 50,
       scrollDirection: Axis.horizontal,
       itemBuilder: (ctx, i) => Padding(
         padding: const EdgeInsets.fromLTRB(16, 45, 16, 16),
@@ -114,11 +116,25 @@ class _VintageCarsState extends State<VintageCars>
                     child: _buildTimeline(context))),
           ),
           Expanded(
-            child: BottomCarCard(
-              carInfo: CarInfo.chevroletCorvetteC3,
-              animationController: _animationController,
-              slideUpAnimation: slideUpAnimation,
-              colorFadeAnimation: colorFadeAnimation,
+            child: StackedCard(
+              onIndexChange: (index) {
+                setState(() {
+                  _currentYear = index + startYear;
+                });
+                _scrollController.scrollTo(
+                    index: index,
+                    alignment: 0.4,
+                    duration: const Duration(milliseconds: 200));
+              },
+              itemBuilder: (index) {
+                return BottomCarCard(
+                  carInfo: CarInfo(
+                      name: 'Chevrolet Corvette C3', year: startYear + index),
+                  animationController: _animationController,
+                  slideUpAnimation: slideUpAnimation,
+                  colorFadeAnimation: colorFadeAnimation,
+                );
+              },
             ),
           ),
         ],
@@ -236,16 +252,15 @@ class BottomCarCard extends StatelessWidget {
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onVerticalDragUpdate: (d) {
+              const duration = Duration(milliseconds: 1500);
               if (d.delta.dy < -0.5 && animationController.value == 0) {
-                animationController.animateTo(1,
-                    duration: const Duration(milliseconds: 1500));
+                animationController.animateTo(1, duration: duration);
               } else if (d.delta.dy > 0.5 && animationController.value == 1) {
-                animationController.animateTo(0,
-                    duration: const Duration(milliseconds: 1500));
+                animationController.animateTo(0, duration: duration);
               }
             },
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
+            child: const Padding(
+              padding: EdgeInsets.all(10.0),
               child: Center(child: Handle(color: Colors.grey)),
             ),
           ),
