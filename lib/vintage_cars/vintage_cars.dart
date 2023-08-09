@@ -221,7 +221,7 @@ class BottomCarCard extends StatelessWidget {
             child: Container(
               color: Colors.white,
               child: ListView(
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.zero,
                 children: [
                   TopCarInfo(

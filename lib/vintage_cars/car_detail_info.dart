@@ -8,8 +8,8 @@ class CarDetailInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final titleStyle = TextStyle(fontSize: 14);
-    final valueStyle = TextStyle(fontSize: 20);
+    const titleStyle = TextStyle(fontSize: 14);
+    const valueStyle = TextStyle(fontSize: 20);
     return Padding(
       padding: const EdgeInsets.only(left: 24.0),
       child: Column(
@@ -20,13 +20,13 @@ class CarDetailInfo extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Production', style: titleStyle),
+                  const Text('Production', style: titleStyle),
                   Text('${info.year}-${info.year + 1}', style: valueStyle),
                 ],
               ),
               const Spacer(),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
+              const Padding(
+                padding: EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -39,8 +39,8 @@ class CarDetailInfo extends StatelessWidget {
             ],
           ),
           Container(height: 1, color: Colors.grey),
-          Padding(
-            padding: const EdgeInsets.only(top: 24.0),
+          const Padding(
+            padding: EdgeInsets.only(top: 24.0),
             child: Text('The third generation Carvette'),
           )
         ],
