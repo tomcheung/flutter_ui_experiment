@@ -116,7 +116,9 @@ class _StackedCardState extends State<StackedCard>
             }
 
             double opacity = 1;
-            if (idx > 0) {
+            if (idx == 3) {
+              opacity = pow(0.5, 3) * transition;
+            } else if (idx > 0) {
               opacity *= pow(0.5, i).toDouble();
             } else {
               opacity = 1 - transition;

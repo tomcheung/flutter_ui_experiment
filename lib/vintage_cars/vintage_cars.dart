@@ -8,6 +8,8 @@ import 'package:uichallenge/vintage_cars/top_car_info.dart';
 import 'car_detail_info.dart';
 import 'components.dart';
 
+const double kCardBorderRadius = 24;
+
 class VintageCars extends StatefulWidget {
   const VintageCars({super.key});
 
@@ -22,6 +24,7 @@ class _VintageCarsState extends State<VintageCars>
   final ItemScrollController _scrollController = ItemScrollController();
   int _currentYear = startYear;
   var _showAppbar = true;
+  var _cardExpened = false;
   late AnimationController _animationController;
   late Animation<double> timelineOffsetAnimation;
   late Animation<double> titleOpacityAnimation;
@@ -46,10 +49,23 @@ class _VintageCarsState extends State<VintageCars>
         Tween<double>(begin: 1, end: 0).animate(slideUpAnimation);
 
     _animationController.addStatusListener((status) {
+      if (status == AnimationStatus.forward) {
+        // _animationController.
+        setState(() {
+          _cardExpened = true;
+        });
+      }
+
       if (status == AnimationStatus.completed) {
         setState(() {
           _showAppbar = _animationController.value < 1;
         });
+
+        if (_animationController.value == 0) {
+          setState(() {
+            _cardExpened = false;
+          });
+        }
       }
     });
 
@@ -75,6 +91,63 @@ class _VintageCarsState extends State<VintageCars>
         ),
       ),
     );
+  }
+
+  Widget _buildBottomCard(BuildContext context) {
+    return Stack(
+      children: [
+        StackedCard(
+          cornerRadius: kCardBorderRadius,
+          onIndexChange: (index) {
+            setState(() {
+              _currentYear = index + startYear;
+            });
+            _scrollController.scrollTo(
+                index: index,
+                alignment: 0.4,
+                duration: const Duration(milliseconds: 200));
+          },
+          itemBuilder: (index) {
+            return Container(
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(kCardBorderRadius),
+                  topRight: Radius.circular(kCardBorderRadius),
+                ),
+              ),
+              child: TopCarInfo(
+                carInfo: CarInfo(
+                  name: 'Chevrolet Corvette C3',
+                  year: startYear + index,
+                ),
+                darkBackground: true,
+                onVerticalDragUpdate: _handleDrag,
+              ),
+            );
+          },
+        ),
+        Visibility(
+          visible: _cardExpened,
+          child: BottomCarCard(
+            carInfo: CarInfo(name: 'Chevrolet Corvette C3', year: _currentYear),
+            animationController: _animationController,
+            slideUpAnimation: slideUpAnimation,
+            colorFadeAnimation: colorFadeAnimation,
+            onVerticalDragUpdate: _handleDrag,
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _handleDrag(DragUpdateDetails d) {
+    const duration = Duration(milliseconds: 1500);
+    if (d.delta.dy < -0.5 && _animationController.value == 0) {
+      _animationController.animateTo(1, duration: duration);
+    } else if (d.delta.dy > 0.5 && _animationController.value == 1) {
+      _animationController.animateTo(0, duration: duration);
+    }
   }
 
   @override
@@ -110,33 +183,13 @@ class _VintageCarsState extends State<VintageCars>
               );
             },
             child: Align(
-                alignment: Alignment.bottomLeft,
-                child: OverflowBox(
-                    alignment: Alignment.bottomLeft,
-                    child: _buildTimeline(context))),
-          ),
-          Expanded(
-            child: StackedCard(
-              onIndexChange: (index) {
-                setState(() {
-                  _currentYear = index + startYear;
-                });
-                _scrollController.scrollTo(
-                    index: index,
-                    alignment: 0.4,
-                    duration: const Duration(milliseconds: 200));
-              },
-              itemBuilder: (index) {
-                return BottomCarCard(
-                  carInfo: CarInfo(
-                      name: 'Chevrolet Corvette C3', year: startYear + index),
-                  animationController: _animationController,
-                  slideUpAnimation: slideUpAnimation,
-                  colorFadeAnimation: colorFadeAnimation,
-                );
-              },
+              alignment: Alignment.bottomLeft,
+              child: OverflowBox(
+                  alignment: Alignment.bottomLeft,
+                  child: _buildTimeline(context)),
             ),
           ),
+          Expanded(child: _buildBottomCard(context)),
         ],
       ),
     );
@@ -147,6 +200,7 @@ class BottomCarCard extends StatelessWidget {
   final AnimationController animationController;
   final Animation<double> slideUpAnimation;
   final Animation<double> colorFadeAnimation;
+  final GestureDragUpdateCallback? onVerticalDragUpdate;
   final CarInfo carInfo;
 
   const BottomCarCard({
@@ -155,6 +209,7 @@ class BottomCarCard extends StatelessWidget {
     required this.animationController,
     required this.slideUpAnimation,
     required this.colorFadeAnimation,
+    this.onVerticalDragUpdate,
   });
 
   @override
@@ -176,7 +231,7 @@ class BottomCarCard extends StatelessWidget {
     final detailSlideInAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(
         parent: colorFadeAnimation,
-        curve: const Interval(0.3, 1),
+        curve: const Interval(0.5, 1),
       ),
     );
 
@@ -227,6 +282,7 @@ class BottomCarCard extends StatelessWidget {
                   TopCarInfo(
                     carInfo: carInfo,
                     darkBackground: false,
+                    onVerticalDragUpdate: onVerticalDragUpdate,
                   ),
                   AnimatedBuilder(
                     animation: detailSlideInAnimation,
@@ -235,7 +291,7 @@ class BottomCarCard extends StatelessWidget {
                         opacity: detailSlideInAnimation.value,
                         child: Transform(
                           transform: Matrix4.translationValues(
-                              100 - detailSlideInAnimation.value * 100, 0, 0),
+                              0, 200 - detailSlideInAnimation.value * 200, 0),
                           child: child,
                         ),
                       );
@@ -245,26 +301,6 @@ class BottomCarCard extends StatelessWidget {
                 ],
               ),
             )),
-        Positioned(
-          top: 42,
-          left: 0,
-          right: 0,
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onVerticalDragUpdate: (d) {
-              const duration = Duration(milliseconds: 1500);
-              if (d.delta.dy < -0.5 && animationController.value == 0) {
-                animationController.animateTo(1, duration: duration);
-              } else if (d.delta.dy > 0.5 && animationController.value == 1) {
-                animationController.animateTo(0, duration: duration);
-              }
-            },
-            child: const Padding(
-              padding: EdgeInsets.all(10.0),
-              child: Center(child: Handle(color: Colors.grey)),
-            ),
-          ),
-        ),
       ],
     );
   }

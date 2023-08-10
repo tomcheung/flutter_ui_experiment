@@ -22,11 +22,26 @@ class Handle extends StatelessWidget {
 }
 
 class TopCarInfo extends StatelessWidget {
+  final bool showHandle;
+  final GestureDragUpdateCallback? onVerticalDragUpdate;
   final bool darkBackground;
   final CarInfo carInfo;
 
-  const TopCarInfo(
-      {super.key, required this.carInfo, this.darkBackground = true});
+  const TopCarInfo({
+    super.key,
+    required this.carInfo,
+    this.darkBackground = true,
+    this.showHandle = true,
+    this.onVerticalDragUpdate,
+  });
+
+  Widget _buildHandle(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onVerticalDragUpdate: onVerticalDragUpdate,
+      child: const Center(child: Handle(color: Colors.grey)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,19 +49,27 @@ class TopCarInfo extends StatelessWidget {
     return Container(
       color: darkBackground ? Colors.black : Colors.white,
       child: Padding(
-        padding: const EdgeInsets.only(top: 64, left: 24, right: 24),
+        padding: const EdgeInsets.only(top: 44, left: 24, right: 24),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
+            SizedBox(
+              height: 42,
+              child: showHandle
+                  ? _buildHandle(context)
+                  : null,
+            ),
             Row(
               children: [
                 Text(
                   carInfo.year.toString(),
-                  style: GoogleFonts.cardo(textStyle: TextStyle(fontSize: 62, color: color)),
+                  style: GoogleFonts.cardo(
+                      textStyle: TextStyle(fontSize: 62, color: color)),
                 ),
                 Text(
                   '-${carInfo.year + 1}',
-                  style: GoogleFonts.cardo(textStyle: TextStyle(
+                  style: GoogleFonts.cardo(
+                      textStyle: TextStyle(
                     fontSize: 30,
                     color: Colors.black,
                     shadows: darkBackground
@@ -64,7 +87,9 @@ class TopCarInfo extends StatelessWidget {
               child:
                   Image.asset('images/vintage_cars/chevrolet_corvette_c3.png'),
             ),
-            Text(carInfo.name, style: GoogleFonts.dmSerifDisplay(textStyle: TextStyle(fontSize: 45, color: color)))
+            Text(carInfo.name,
+                style: GoogleFonts.dmSerifDisplay(
+                    textStyle: TextStyle(fontSize: 45, color: color)))
           ],
         ),
       ),
