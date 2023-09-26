@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:uichallenge/vintage_cars/car_info.dart';
+import 'package:flutter_ui_experiment/vintage_cars/car_info.dart';
 
 import 'components.dart';
 
@@ -45,11 +45,13 @@ class TopCarInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final topInset = MediaQueryData.fromView(View.of(context)).padding.top;
+
     final color = darkBackground ? Colors.blue.shade50 : Colors.black;
     return Container(
       color: darkBackground ? Colors.black : Colors.white,
       child: Padding(
-        padding: const EdgeInsets.only(top: 44, left: 24, right: 24),
+        padding: EdgeInsets.only(top: topInset, left: 24, right: 24),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [

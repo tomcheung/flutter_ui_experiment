@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uichallenge/shopping_cart/shopping_cart_detail.dart';
+import 'package:flutter_ui_experiment/shopping_cart/shopping_cart_detail.dart';
 
 import 'product.dart';
 import 'product_cart_provider.dart';

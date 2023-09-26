@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:uichallenge/vintage_cars/car_info.dart';
+import 'package:flutter_ui_experiment/vintage_cars/car_info.dart';
 
 class CarDetailInfo extends StatelessWidget {
   final CarInfo info;

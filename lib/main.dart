@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:uichallenge/vintage_cars/vintage_cars.dart';
-import 'package:uichallenge/shopping_cart/shopping_cart_list.dart';
+import 'vintage_cars/vintage_cars.dart';
+import 'shopping_cart/shopping_cart_list.dart';
 
 import 'animated_todo_list/animated_todo_list.dart';
 

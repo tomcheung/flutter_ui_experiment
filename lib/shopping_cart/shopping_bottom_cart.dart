@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uichallenge/shopping_cart/product.dart';
-import 'package:uichallenge/shopping_cart/product_cart_provider.dart';
+import 'package:flutter_ui_experiment/shopping_cart/product.dart';
+import 'package:flutter_ui_experiment/shopping_cart/product_cart_provider.dart';
 
 class BottomShoppingCartListItem extends StatelessWidget {
   final ShoppingCartItem cartItem;

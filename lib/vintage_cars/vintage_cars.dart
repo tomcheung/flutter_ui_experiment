@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:uichallenge/vintage_cars/car_info.dart';
-import 'package:uichallenge/vintage_cars/stacked_card.dart';
-import 'package:uichallenge/vintage_cars/top_car_info.dart';
+import 'package:flutter_ui_experiment/vintage_cars/car_info.dart';
+import 'package:flutter_ui_experiment/vintage_cars/stacked_card.dart';
+import 'package:flutter_ui_experiment/vintage_cars/top_car_info.dart';
 
 import 'car_detail_info.dart';
 import 'components.dart';
