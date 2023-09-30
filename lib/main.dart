@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'music_player/music_player.dart';
 import 'vintage_cars/vintage_cars.dart';
 import 'shopping_cart/shopping_cart_list.dart';
-
 import 'animated_todo_list/animated_todo_list.dart';
 
 void main() {
@@ -66,7 +66,17 @@ class DemoList extends StatelessWidget {
                 },
                 trailing: const Icon(Icons.arrow_forward),
               ),
-            )
+            ),
+            Card(
+              child: ListTile(
+                title: const Text('Music Player'),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const MusicPlayer()));
+                },
+                trailing: const Icon(Icons.arrow_forward),
+              ),
+            ),
           ],
         ),
       ),
