@@ -2,12 +2,15 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_ui_experiment/music_player/music_player_component.dart';
+import 'package:flutter_ui_experiment/music_player/music_player_now_playing.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'model.dart';
+import 'music_player_custom_route.dart';
 
 class MusicPlayerHome extends StatefulWidget {
   final List<Album> albums;
+
   const MusicPlayerHome({super.key, required this.albums});
 
   @override
@@ -91,8 +94,7 @@ class _MusicPlayerHomeState extends State<MusicPlayerHome> {
             index: index,
             scrollAnimation: _albumCoverPageController,
             builder: (context, offset, child) {
-              final double padding =
-                  max(0, 1 - offset.abs()) * 70 + 10;
+              final double padding = max(0, 1 - offset.abs()) * 70 + 10;
               return MusicAlbumCover(
                 image: widget.albums[index].coverImage,
                 position: index,
@@ -128,12 +130,22 @@ class _MusicPlayerHomeState extends State<MusicPlayerHome> {
             ),
             Container(
               height: 12,
-              decoration: const BoxDecoration(color: Color(0xFFEBEBEB), boxShadow: [
-                BoxShadow(color: Color(0x3DA3A3A3), blurRadius: 8)
-              ]),
+              decoration: const BoxDecoration(
+                  color: Color(0xFFEBEBEB),
+                  boxShadow: [
+                    BoxShadow(color: Color(0x3DA3A3A3), blurRadius: 8)
+                  ]),
             ),
             Expanded(child: _buildInfoView(context)),
-            const PlayerInfoBar(),
+            GestureDetector(
+                onTap: () {
+                  final route = MusicNowPlayingRoute(
+                      builder: (ctx, animation) => MusicPlayerNowPlaying(
+                          enterTransitionAnimation: animation));
+                  Navigator.push(context, route);
+                },
+                child: const PlayerInfoBar()),
+            // const PlayerInfoBar(),
           ],
         ),
       ),
