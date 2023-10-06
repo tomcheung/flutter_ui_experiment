@@ -101,27 +101,31 @@ class AlbumInfoView extends StatelessWidget {
               style: titleTheme.displayLarge,
             ),
             const SizedBox(height: 18),
-            RichText(
-              text: TextSpan(
-                text: 'By ',
-                children: [
-                  TextSpan(
-                    text: album.author,
-                    style: const TextStyle(color: Colors.black),
-                  )
-                ],
-                style: const TextStyle(color: Colors.grey),
-              ),
-            ),
-            Text(
-              '${album.relatedDate.year}  ${album.length.inMinutes} mins',
-              style: const TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              album.description,
-              style: const TextStyle(color: Colors.grey),
-            ),
+            Expanded(child:
+              ListView(children: [
+                RichText(
+                  text: TextSpan(
+                    text: 'By ',
+                    children: [
+                      TextSpan(
+                        text: album.author,
+                        style: const TextStyle(color: Colors.black),
+                      )
+                    ],
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                ),
+                Text(
+                  '${album.relatedDate.year}  ${album.length.inMinutes} mins',
+                  style: const TextStyle(color: Colors.grey),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  album.description,
+                  style: const TextStyle(color: Colors.grey),
+                ),
+              ],)
+            )
           ],
         ),
       ),

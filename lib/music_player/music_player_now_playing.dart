@@ -13,7 +13,8 @@ class MusicPlayerNowPlaying extends StatefulWidget {
   State<MusicPlayerNowPlaying> createState() => _MusicPlayerNowPlayingState();
 }
 
-class _MusicPlayerNowPlayingState extends State<MusicPlayerNowPlaying> with TickerProviderStateMixin {
+class _MusicPlayerNowPlayingState extends State<MusicPlayerNowPlaying>
+    with TickerProviderStateMixin {
   late Animation _slideAnimation;
   late Animation _rotateAnimation;
   late Animation _opacityAnimation;
@@ -21,12 +22,14 @@ class _MusicPlayerNowPlayingState extends State<MusicPlayerNowPlaying> with Tick
   @override
   void initState() {
     final masterController = widget.enterTransitionAnimation;
-    _slideAnimation = masterController.drive(
-        Tween(begin: -700.0, end: 0.0).chain(CurveTween(curve: const Interval(0.5, 1.0, curve: Curves.easeOut))));
-    _rotateAnimation = masterController.drive(
-        Tween(begin: 0.1, end: 0.9).chain(CurveTween(curve: const Interval(0.7, 1.0, curve: Curves.easeInOut))));
-    _opacityAnimation = masterController.drive(
-        Tween(begin: 0.0, end: 1.0).chain(CurveTween(curve: const Interval(0.4, 0.55, curve: Curves.linear))));
+    _slideAnimation = masterController.drive(Tween(begin: -700.0, end: 0.0)
+        .chain(CurveTween(
+            curve: const Interval(0.5, 1.0, curve: Curves.easeOut))));
+    _rotateAnimation = masterController.drive(Tween(begin: 0.1, end: 0.8).chain(
+        CurveTween(curve: const Interval(0.7, 1.0, curve: Curves.easeInOut))));
+    _opacityAnimation = masterController.drive(Tween(begin: 0.0, end: 1.0)
+        .chain(CurveTween(
+            curve: const Interval(0.4, 0.55, curve: Curves.linear))));
 
     super.initState();
   }
@@ -35,14 +38,18 @@ class _MusicPlayerNowPlayingState extends State<MusicPlayerNowPlaying> with Tick
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('NOW PLAYING', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),),
+        title: const Text(
+          'NOW PLAYING',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+        ),
         centerTitle: true,
       ),
       body: _NowPlayingEnterTransitionCover(
         enterTransitionAnimation: widget.enterTransitionAnimation,
         child: Container(
-          color: Colors.white54,
+          color: const Color(0xFFF0F1F1),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               AnimatedBuilder(
                 animation: _rotateAnimation,
@@ -54,15 +61,68 @@ class _MusicPlayerNowPlayingState extends State<MusicPlayerNowPlaying> with Tick
                   ),
                 ),
               ),
-              const Text('David Bowie', style: TextStyle(fontSize: 24),),
+              const Text(
+                'David Bowie',
+                style: TextStyle(fontSize: 24),
+              ),
               Text(
                 'Dollar Days',
-                style: GoogleFonts.playfairDisplay(fontSize: 58, fontWeight: FontWeight.w700),
+                style: GoogleFonts.playfairDisplay(
+                    fontSize: 58, fontWeight: FontWeight.w700),
               ),
+              const _PlayerControl(),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class _PlayerControl extends StatelessWidget {
+  const _PlayerControl({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      fit: StackFit.passthrough,
+      children: [
+        Container(
+          decoration: const ShapeDecoration(
+            shape: StadiumBorder(),
+            color: Colors.white,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(width: 12),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.skip_previous),
+                color: const Color(0xFFD1C8B1),
+              ),
+              const SizedBox(width: 70),
+              IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.skip_next),
+                  color: const Color(0xFFD1C8B1)),
+              const SizedBox(width: 12),
+            ],
+          ),
+        ),
+        IconButton(
+          icon: const Icon(Icons.play_arrow),
+          onPressed: () {},
+          style: IconButton.styleFrom(
+              iconSize: 45,
+              padding: const EdgeInsets.all(12),
+              elevation: 12,
+              backgroundColor: const Color(0xFFD1C8B1),
+              foregroundColor: Colors.white,
+              shadowColor: Colors.black54),
+        )
+      ],
     );
   }
 }
@@ -88,19 +148,20 @@ class _VinylPlayerView extends StatelessWidget {
           alignment: Alignment.center,
           transform: transform,
           child: DecoratedBox(
-              decoration: const BoxDecoration(
-                color: Colors.black,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    blurRadius: 12,
-                    spreadRadius: 3,
-                    offset: Offset(0, 6),
-                    color: Colors.black45,
-                  )
-                ],
-              ),
-              child: Image.asset('images/music_player/vinyl.png')),
+            decoration: const BoxDecoration(
+              color: Colors.black,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 12,
+                  spreadRadius: 3,
+                  offset: Offset(0, 6),
+                  color: Colors.black45,
+                )
+              ],
+            ),
+            child: Image.asset('images/music_player/vinyl.png'),
+          ),
         ),
       ),
     );
@@ -119,7 +180,8 @@ class _NowPlayingEnterTransitionCover extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tween = CurveTween(curve: const Interval(0.3, 0.7, curve: Curves.easeIn));
+    final tween =
+        CurveTween(curve: const Interval(0.3, 0.7, curve: Curves.easeIn));
     final slideAnimation = Tween(begin: Offset.zero, end: const Offset(0, -1))
         .chain(tween)
         .animate(enterTransitionAnimation);
