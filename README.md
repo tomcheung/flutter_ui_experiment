@@ -1,16 +1,15 @@
 # Flutter UI Experiment
 
-A project for some UI experiment
+A collection of some UI experiment, base on some UI design
 
-## Getting Started
+## Demo
 
-This project is a starting point for a Flutter application.
+### Music player
 
-A few resources to get you started if this is your first Flutter project:
+_Credit: https://dribbble.com/shots/10123436-Music-Player-Vinyls_
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+https://github.com/tomcheung/flutter_ui_experiment/assets/9416042/6a60c724-1aa8-4650-a939-241b2861acdf
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Vintage cars
+
+https://github.com/tomcheung/flutter_ui_experiment/assets/9416042/d83ddcf2-1d71-4ac4-a5a8-d4215f42490c
