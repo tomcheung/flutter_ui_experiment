@@ -114,7 +114,7 @@ class _ShoppingCartListContentState extends State<ShoppingCartListContent>
             animation: _verticalOffsetAnimation,
             builder: (context, child) {
               final topOffset =
-                  c.maxHeight + _verticalOffsetAnimation.value - 60;
+                  c.maxHeight + _verticalOffsetAnimation.value - 80;
               return Transform.translate(
                 offset: Offset(0, topOffset),
                 child: SizedBox(
@@ -149,29 +149,31 @@ class _ShoppingCartListContentState extends State<ShoppingCartListContent>
               title: const Text('Pasta & Noodles'),
             ),
             backgroundColor: Colors.transparent,
-            body: Column(
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Color(0xfff7f4ef),
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(42),
-                        bottomRight: Radius.circular(42),
+            body: SafeArea(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Color(0xfff7f4ef),
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(42),
+                          bottomRight: Radius.circular(42),
+                        ),
+                      ),
+                      child: GridView.count(
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.56,
+                        padding: const EdgeInsets.all(8),
+                        children: Product.sample
+                            .map((e) => ShoppingCartItemCard(product: e))
+                            .toList(growable: false),
                       ),
                     ),
-                    child: GridView.count(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.56,
-                      padding: const EdgeInsets.all(8),
-                      children: Product.sample
-                          .map((e) => ShoppingCartItemCard(product: e))
-                          .toList(growable: false),
-                    ),
                   ),
-                ),
-                _buildBottomHeader(context)
-              ],
+                  _buildBottomHeader(context)
+                ],
+              ),
             ),
           ),
         ),

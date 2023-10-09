@@ -36,10 +36,34 @@ class BottomShoppingCartListItem extends StatelessWidget {
 class BottomShoppingCartList extends ConsumerWidget {
   const BottomShoppingCartList({super.key});
 
+  Widget _buildCartList(BuildContext context, WidgetRef ref) {
+    final shoppingCart = ref.watch(shoppingCartProvider);
+
+    if (shoppingCart.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 8.0),
+        child: Text(
+          'No item',
+          style: TextStyle(fontSize: 16, color: Colors.white54),
+        ),
+      );
+    }
+
+    return ListView(
+      children: shoppingCart
+          .map((i) => BottomShoppingCartListItem(
+                cartItem: ShoppingCartItem(
+                  product: i.product,
+                  quantity: i.quantity,
+                ),
+              ))
+          .toList(),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final shoppingCart = ref.watch(shoppingCartProvider);
     final total = ref.watch(shoppingCartTotalProvider);
 
     return Padding(
@@ -58,16 +82,7 @@ class BottomShoppingCartList extends ConsumerWidget {
                 ),
               ),
               Expanded(
-                child: ListView(
-                  children: shoppingCart
-                      .map((i) => BottomShoppingCartListItem(
-                            cartItem: ShoppingCartItem(
-                              product: i.product,
-                              quantity: i.quantity,
-                            ),
-                          ))
-                      .toList(),
-                ),
+                child: _buildCartList(context, ref),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16),
