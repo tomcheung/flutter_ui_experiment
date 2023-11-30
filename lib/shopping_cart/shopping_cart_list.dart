@@ -140,11 +140,11 @@ class _ShoppingCartListContentState extends State<ShoppingCartListContent>
           ),
           child: Scaffold(
             appBar: AppBar(
-              leading: BackButton(
-                onPressed: () {
-                  Navigator.of(widget.rootContext).pop();
-                },
-              ),
+              leading: Navigator.canPop(widget.rootContext)
+                  ? BackButton(onPressed: () {
+                      Navigator.pop(widget.rootContext);
+                    })
+                  : null,
               backgroundColor: const Color(0xfff7f4ef),
               title: const Text('Pasta & Noodles'),
             ),

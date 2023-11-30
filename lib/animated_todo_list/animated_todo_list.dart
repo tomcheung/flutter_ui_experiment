@@ -71,7 +71,11 @@ class _HomeTodoListState extends State<HomeTodoList> {
       animation: _backgroundColor,
       builder: (context, child) => Scaffold(
         appBar: AppBar(
-          leading: BackButton(onPressed: () => Navigator.of(context).pop(),),
+          leading: Navigator.canPop(context)
+              ? BackButton(onPressed: () {
+                  Navigator.pop(context);
+                })
+              : null,
           centerTitle: true,
           titleTextStyle: const TextStyle(color: Colors.white, fontSize: 22),
           iconTheme: const IconThemeData(color: Colors.white),
@@ -105,11 +109,11 @@ class _HomeTodoListState extends State<HomeTodoList> {
                   children: todoList
                       .map(
                         (todoList) => SizedBox(
-                      width: constraint.maxWidth - 32,
-                      height: constraint.maxHeight,
-                      child: TaskListCard(name: todoList.name),
-                    ),
-                  )
+                          width: constraint.maxWidth - 32,
+                          height: constraint.maxHeight,
+                          child: TaskListCard(name: todoList.name),
+                        ),
+                      )
                       .toList(growable: false),
                 );
               }),

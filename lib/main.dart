@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ui_experiment/music_player/music_player_custom_route.dart';
+import 'package:flutter_ui_experiment/mobile_entry.dart';
+import 'package:flutter_ui_experiment/web_entry.dart';
 import 'animated_todo_list/animated_todo_list.dart';
 import 'music_player/music_player.dart';
 import 'shopping_cart/shopping_cart_list.dart';
@@ -10,78 +12,31 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  static final List<DemoItem> items = [
+    DemoItem(
+        name: 'Animated TODO list',
+        builder: (context) => const AnimatedTodoList()),
+    DemoItem(
+        name: 'Shopping cart', builder: (context) => const ShoppingCartList()),
+    DemoItem(name: 'Vintage cars', builder: (context) => const VintageCars()),
+    DemoItem(name: 'Music Player', builder: (context) => const MusicPlayer()),
+  ];
+
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
-        useMaterial3: true,
-      ),
-      home: const DemoList(),
-    );
+    if (kIsWeb) {
+      return WebEntry(items: items);
+    } else {
+      return MobileEntry(items: items);
+    }
   }
 }
 
-class DemoList extends StatelessWidget {
-  const DemoList({super.key});
+class DemoItem {
+  final String name;
+  final WidgetBuilder builder;
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar:
-          AppBar(title: const Text('Flutter UI experiment'), centerTitle: true),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            Card(
-              child: ListTile(
-                title: const Text('Animated TODO list'),
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const AnimatedTodoList()));
-                },
-                trailing: const Icon(Icons.arrow_forward),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                title: const Text('Shopping cart'),
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const ShoppingCartList()));
-                },
-                trailing: const Icon(Icons.arrow_forward),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                title: const Text('Vintage cars'),
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const VintageCars()));
-                },
-                trailing: const Icon(Icons.arrow_forward),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                title: const Text('Music Player'),
-                onTap: () {
-                  final navigator = Navigator.of(context);
-                  navigator.push(MusicPlayerHomeRoute(
-                      builder: (context) => const MusicPlayer()));
-                },
-                trailing: const Icon(Icons.arrow_forward),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  const DemoItem({required this.name, required this.builder});
 }

@@ -40,6 +40,7 @@ dependencies:
   collection:
   google_fonts:
   scrollable_positioned_list: ^0.3.8
+  device_frame: ^1.1.0
 
 dev_dependencies:
   flutter_test:
