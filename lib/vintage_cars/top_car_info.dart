@@ -45,7 +45,7 @@ class TopCarInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topInset = MediaQueryData.fromView(View.of(context)).padding.top;
+    final topInset = MediaQuery.paddingOf(context).top;
 
     final color = darkBackground ? Colors.blue.shade50 : Colors.black;
     return Container(

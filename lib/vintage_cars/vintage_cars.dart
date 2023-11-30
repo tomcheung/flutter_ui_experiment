@@ -108,33 +108,40 @@ class _VintageCarsState extends State<VintageCars>
                 duration: const Duration(milliseconds: 200));
           },
           itemBuilder: (index) {
-            return Container(
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(kCardBorderRadius),
-                  topRight: Radius.circular(kCardBorderRadius),
+            return MediaQuery.removePadding(
+              context: context,
+              child: Container(
+                clipBehavior: Clip.antiAliasWithSaveLayer,
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(kCardBorderRadius),
+                    topRight: Radius.circular(kCardBorderRadius),
+                  ),
                 ),
-              ),
-              child: TopCarInfo(
-                carInfo: CarInfo(
-                  name: 'Chevrolet Corvette C3',
-                  year: startYear + index,
+                child: TopCarInfo(
+                  carInfo: CarInfo(
+                    name: 'Chevrolet Corvette C3',
+                    year: startYear + index,
+                  ),
+                  darkBackground: true,
+                  onVerticalDragUpdate: _handleDrag,
                 ),
-                darkBackground: true,
-                onVerticalDragUpdate: _handleDrag,
               ),
             );
           },
         ),
         Visibility(
           visible: _cardExpened,
-          child: BottomCarCard(
-            carInfo: CarInfo(name: 'Chevrolet Corvette C3', year: _currentYear),
-            animationController: _animationController,
-            slideUpAnimation: slideUpAnimation,
-            colorFadeAnimation: colorFadeAnimation,
-            onVerticalDragUpdate: _handleDrag,
+          child: MediaQuery.removePadding(
+            context: context,
+            removeTop: false,
+            child: BottomCarCard(
+              carInfo: CarInfo(name: 'Chevrolet Corvette C3', year: _currentYear),
+              animationController: _animationController,
+              slideUpAnimation: slideUpAnimation,
+              colorFadeAnimation: colorFadeAnimation,
+              onVerticalDragUpdate: _handleDrag,
+            ),
           ),
         ),
       ],
