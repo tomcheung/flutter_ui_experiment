@@ -136,7 +136,10 @@ class _VintageCarsState extends State<VintageCars>
             context: context,
             removeTop: false,
             child: BottomCarCard(
-              carInfo: CarInfo(name: 'Chevrolet Corvette C3', year: _currentYear),
+              carInfo: CarInfo(
+                name: 'Chevrolet Corvette C3',
+                year: _currentYear,
+              ),
               animationController: _animationController,
               slideUpAnimation: slideUpAnimation,
               colorFadeAnimation: colorFadeAnimation,
@@ -189,12 +192,12 @@ class _VintageCarsState extends State<VintageCars>
                 child: child,
               );
             },
-            child: Align(
-              alignment: Alignment.bottomLeft,
-              child: OverflowBox(
-                  alignment: Alignment.bottomLeft,
-                  child: _buildTimeline(context)),
-            ),
+            child: SafeArea(
+                top: true,
+                bottom: false,
+                left: false,
+                right: false,
+                child: _buildTimeline(context)),
           ),
           Expanded(child: _buildBottomCard(context)),
         ],

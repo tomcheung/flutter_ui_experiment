@@ -57,9 +57,7 @@ class TopCarInfo extends StatelessWidget {
           children: [
             SizedBox(
               height: 42,
-              child: showHandle
-                  ? _buildHandle(context)
-                  : null,
+              child: showHandle ? _buildHandle(context) : null,
             ),
             Row(
               children: [
@@ -68,19 +66,15 @@ class TopCarInfo extends StatelessWidget {
                   style: GoogleFonts.cardo(
                       textStyle: TextStyle(fontSize: 62, color: color)),
                 ),
-                Text(
-                  '-${carInfo.year + 1}',
-                  style: GoogleFonts.cardo(
-                      textStyle: TextStyle(
-                    fontSize: 30,
-                    color: Colors.black,
-                    shadows: darkBackground
-                        ? TimelineYear.outlinedText(
-                            precision: 2,
-                            strokeWidth: 1,
-                            strokeColor: color.withAlpha(50))
-                        : null,
+                OutlineText(
+                  text: '-${carInfo.year + 1}',
+                  textStyle: GoogleFonts.cardo(
+                      textStyle: const TextStyle(
+                    fontSize: 32,
+                    color: Colors.transparent,
                   )),
+                  strokeColor: color,
+                  strokeWidth: 1,
                 ),
               ],
             ),
